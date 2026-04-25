@@ -2,11 +2,11 @@ from scanner import scan_directory
 
 
 def main():
-    root = "."  # current directory
-    files = scan_directory(root)
+    files = scan_directory(".")
 
     print(f"Found {len(files)} files")
-    for f in files[:10]:  # print first 10 only
+
+    for f in files[:5]:
         print(f)
 
 
