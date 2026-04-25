@@ -1,17 +1,17 @@
 [
   {
     "path": "./main.py",
-    "size": 283,
-    "modified_at": 1777146292.3573449,
+    "size": 375,
+    "modified_at": 1777147457.8270602,
     "language": "python",
     "imports": [
       {
-        "type": "raw",
-        "target": "json"
+        "type": "local_or_external",
+        "target": "scanner"
       },
       {
-        "type": "raw",
-        "target": "scanner"
+        "type": "local_or_external",
+        "target": "dependency_graph"
       }
     ]
   },
@@ -38,41 +38,45 @@
   },
   {
     "path": "./scanner.py",
-    "size": 1985,
-    "modified_at": 1777146915.7698915,
+    "size": 1950,
+    "modified_at": 1777147317.4238036,
     "language": "python",
     "imports": [
       {
-        "type": "raw",
+        "type": "stdlib",
         "target": "os"
       },
       {
-        "type": "raw",
+        "type": "stdlib",
         "target": "json"
       },
       {
-        "type": "raw",
+        "type": "local_or_external",
         "target": "extractor"
       }
     ]
   },
   {
     "path": "./extractor.py",
-    "size": 1134,
-    "modified_at": 1777146787.5998466,
+    "size": 863,
+    "modified_at": 1777147327.0674498,
     "language": "python",
     "imports": [
       {
-        "type": "raw",
+        "type": "local_or_external",
         "target": "ast"
-      },
+      }
+    ]
+  },
+  {
+    "path": "./dependency_graph.py",
+    "size": 2996,
+    "modified_at": 1777147998.398265,
+    "language": "python",
+    "imports": [
       {
-        "type": "raw",
-        "target": "os"
-      },
-      {
-        "type": "raw",
-        "target": "ast"
+        "type": "stdlib",
+        "target": "json"
       }
     ]
   },

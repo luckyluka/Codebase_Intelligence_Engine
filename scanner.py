@@ -52,7 +52,6 @@ def scan_directory(root="."):
 
     for dirpath, dirnames, filenames in os.walk(root):
 
-        # prune ignored dirs early
         dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
 
         for file in filenames:
