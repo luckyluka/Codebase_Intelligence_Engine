@@ -14,10 +14,22 @@ EXTENSION_MAP = {
     ".sh": "shell",
 }
 
+IGNORE_DIRS = {
+    ".git",
+    "node_modules",
+    "build",
+    "dist",
+    "__pycache__",
+    "vendor",
+}
+
 def scan_directory(root_path):
     file_records = []
 
     for dirpath, dirnames, filenames in os.walk(root_path):
+    # remove ignored directories IN-PLACE
+        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
+
         for filename in filenames:
             full_path = os.path.join(dirpath, filename)
 
