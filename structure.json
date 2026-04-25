@@ -1,0 +1,67 @@
+[
+  {
+    "path": "./main.py",
+    "size": 285,
+    "modified_at": 1777146292.3573449,
+    "language": "python",
+    "imports": [
+      "json",
+      "scanner.scan_directory"
+    ]
+  },
+  {
+    "path": "./summarizer.py",
+    "size": 0,
+    "modified_at": 1777144700.870319,
+    "language": "python",
+    "imports": []
+  },
+  {
+    "path": "./README.md",
+    "size": 1203,
+    "modified_at": 1777144475.8447797,
+    "language": "markdown",
+    "imports": []
+  },
+  {
+    "path": "./cache.py",
+    "size": 0,
+    "modified_at": 1777144700.870319,
+    "language": "python",
+    "imports": []
+  },
+  {
+    "path": "./scanner.py",
+    "size": 1566,
+    "modified_at": 1777146486.6993895,
+    "language": "python",
+    "imports": [
+      "os",
+      "json",
+      "extractor.extract_imports"
+    ]
+  },
+  {
+    "path": "./extractor.py",
+    "size": 744,
+    "modified_at": 1777146260.9267979,
+    "language": "python",
+    "imports": [
+      "ast"
+    ]
+  },
+  {
+    "path": "./PHASES.md",
+    "size": 739,
+    "modified_at": 1777145940.7603157,
+    "language": "markdown",
+    "imports": []
+  },
+  {
+    "path": "./data/files.json",
+    "size": 570,
+    "modified_at": 1777145730.4614491,
+    "language": "unknown",
+    "imports": []
+  }
+]

@@ -1,52 +1,64 @@
 import os
-
-EXTENSION_MAP = {
-    ".py": "python",
-    ".c": "c",
-    ".h": "c",
-    ".cpp": "cpp",
-    ".hpp": "cpp",
-    ".js": "javascript",
-    ".ts": "typescript",
-    ".go": "go",
-    ".rs": "rust",
-    ".java": "java",
-    ".sh": "shell",
-}
+import json
+from extractor import extract_imports
 
 IGNORE_DIRS = {
     ".git",
-    "node_modules",
-    "build",
-    "dist",
     "__pycache__",
-    "vendor",
+    "node_modules",
+    "dist",
+    "build"
 }
 
-def scan_directory(root_path):
-    file_records = []
+IGNORE_SUFFIXES = {
+    ".pyc",
+    ".pyo"
+}
+
+def scan_directory(root_path: str):
+    files = []
 
     for dirpath, dirnames, filenames in os.walk(root_path):
-    # remove ignored directories IN-PLACE
+        # 🚫 prune directories in-place
         dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
 
-        for filename in filenames:
-            full_path = os.path.join(dirpath, filename)
-
-            try:
-                stat = os.stat(full_path)
-                file_records.append({
-                "path": full_path,
-                "size": stat.st_size,
-                "modified_at": stat.st_mtime,
-                "language": detect_language(filename)
-            })
-            except OSError:
-                # Skip files we can't access
+        for f in filenames:
+            if any(f.endswith(s) for s in IGNORE_SUFFIXES):
                 continue
 
-    return file_records
+            full_path = os.path.join(dirpath, f)
 
-def detect_language(filename):
-    _, ext = os.path.splitext(filename)
-    return EXTENSION_MAP.get(ext.lower(), "unknown")
+            if os.path.isdir(full_path):
+                continue
+
+            file_info = {
+                "path": full_path,
+                "size": os.path.getsize(full_path),
+                "modified_at": os.path.getmtime(full_path),
+                "language": detect_language(full_path)
+            }
+
+            # ✅ PHASE 2.1 ADDITION
+            if file_info["language"] == "python":
+                try:
+                    file_info["imports"] = extract_imports(full_path)
+                except Exception:
+                    file_info["imports"] = []
+            else:
+                file_info["imports"] = []
+
+            files.append(file_info)
+
+    return files
+
+
+def detect_language(path: str):
+    if path.endswith(".py"):
+        return "python"
+    elif path.endswith(".c") or path.endswith(".h"):
+        return "c"
+    elif path.endswith(".js"):
+        return "javascript"
+    elif path.endswith(".md"):
+        return "markdown"
+    return "unknown"

@@ -1,21 +1,13 @@
-import os
-from scanner import scan_directory
 import json
-
-def main():
-    os.makedirs("data", exist_ok=True)
-
-    files = scan_directory(".")
-
-    print(f"Found {len(files)} files")
-
-    for f in files[:5]:
-        print(f)
-
-    # Save the file records to a JSON file
-    with open("data/files.json", "w") as f:
-        json.dump(files, f)
+from scanner import scan_directory
 
 
 if __name__ == "__main__":
-    main()
+    root = "."
+
+    scanned = scan_directory(root)
+
+    with open("structure.json", "w", encoding="utf-8") as f:
+        json.dump(scanned, f, indent=2)
+
+    print("Scan complete → structure.json generated")
