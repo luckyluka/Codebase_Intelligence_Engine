@@ -1,29 +1,51 @@
+# extractor.py
+import ast
+import os
+
+
+STD_LIB = {
+    "os", "sys", "json", "math", "time", "re", "datetime",
+    "typing", "pathlib", "collections", "itertools"
+}
+
+
+def classify_import(module_name: str):
+    if module_name.split(".")[0] in STD_LIB:
+        return {"type": "stdlib", "target": module_name}
+
+    return {"type": "external_or_local", "target": module_name}
+
+
 import ast
 
 
-def extract_imports(file_path: str):
-    """
-    Extract Python imports using AST.
-    Deterministic, no heuristics.
-    """
-    with open(file_path, "r", encoding="utf-8") as f:
-        tree = ast.parse(f.read(), filename=file_path)
+def extract_imports(file_path: str, source: str):
+
+    # ONLY parse Python files
+    if not file_path.endswith(".py"):
+        return []
+
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        # malformed python file → skip safely
+        return []
 
     imports = []
 
     for node in ast.walk(tree):
-        # import x
         if isinstance(node, ast.Import):
             for n in node.names:
-                imports.append(n.name)
+                imports.append({
+                    "type": "raw",
+                    "target": n.name
+                })
 
-        # from x import y
         elif isinstance(node, ast.ImportFrom):
-            module = node.module or ""
-            for n in node.names:
-                if module:
-                    imports.append(f"{module}.{n.name}")
-                else:
-                    imports.append(n.name)
+            module = node.module if node.module else ""
+            imports.append({
+                "type": "raw",
+                "target": module
+            })
 
     return imports

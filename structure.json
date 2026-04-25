@@ -1,12 +1,18 @@
 [
   {
     "path": "./main.py",
-    "size": 285,
+    "size": 283,
     "modified_at": 1777146292.3573449,
     "language": "python",
     "imports": [
-      "json",
-      "scanner.scan_directory"
+      {
+        "type": "raw",
+        "target": "json"
+      },
+      {
+        "type": "raw",
+        "target": "scanner"
+      }
     ]
   },
   {
@@ -18,7 +24,7 @@
   },
   {
     "path": "./README.md",
-    "size": 1203,
+    "size": 1170,
     "modified_at": 1777144475.8447797,
     "language": "markdown",
     "imports": []
@@ -32,36 +38,49 @@
   },
   {
     "path": "./scanner.py",
-    "size": 1566,
-    "modified_at": 1777146486.6993895,
+    "size": 1985,
+    "modified_at": 1777146915.7698915,
     "language": "python",
     "imports": [
-      "os",
-      "json",
-      "extractor.extract_imports"
+      {
+        "type": "raw",
+        "target": "os"
+      },
+      {
+        "type": "raw",
+        "target": "json"
+      },
+      {
+        "type": "raw",
+        "target": "extractor"
+      }
     ]
   },
   {
     "path": "./extractor.py",
-    "size": 744,
-    "modified_at": 1777146260.9267979,
+    "size": 1134,
+    "modified_at": 1777146787.5998466,
     "language": "python",
     "imports": [
-      "ast"
+      {
+        "type": "raw",
+        "target": "ast"
+      },
+      {
+        "type": "raw",
+        "target": "os"
+      },
+      {
+        "type": "raw",
+        "target": "ast"
+      }
     ]
   },
   {
     "path": "./PHASES.md",
-    "size": 739,
+    "size": 731,
     "modified_at": 1777145940.7603157,
     "language": "markdown",
-    "imports": []
-  },
-  {
-    "path": "./data/files.json",
-    "size": 570,
-    "modified_at": 1777145730.4614491,
-    "language": "unknown",
     "imports": []
   }
 ]
