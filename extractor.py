@@ -1,4 +1,5 @@
 import ast
+import hashlib
 
 
 def extract_imports(path, source):
@@ -32,26 +33,40 @@ def extract_imports(path, source):
 
     return imports
 
+def _get_source_segment(source_lines, node):
+    """Extract function body from source using line numbers"""
+    start = node.lineno - 1
+    end = getattr(node, "end_lineno", node.lineno)
+    return "\n".join(source_lines[start:end])
 
-def extract_functions(source):
-    """
-    Extract top-level function definitions with metadata
-    """
+
+def _hash(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def extract_functions(source: str):
     functions = []
 
     try:
         tree = ast.parse(source)
+        source_lines = source.splitlines()
     except Exception:
         return functions
 
     for node in tree.body:
         if isinstance(node, ast.FunctionDef):
+
+            body = _get_source_segment(source_lines, node)
+
             functions.append({
                 "name": node.name,
                 "lineno": node.lineno,
                 "end_lineno": getattr(node, "end_lineno", node.lineno),
                 "args": [arg.arg for arg in node.args.args],
-                "returns": None  # reserved for later
+
+                # NEW FIELDS (3.2 core)
+                "body": body,
+                "hash": _hash(body)
             })
 
     return functions

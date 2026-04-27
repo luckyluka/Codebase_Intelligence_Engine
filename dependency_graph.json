@@ -37,6 +37,12 @@
       "resolution": "resolved"
     },
     {
+      "from": "extractor.py",
+      "to": "hashlib",
+      "type": "external_dependency",
+      "resolution": "unresolved"
+    },
+    {
       "from": "dependency_graph.py",
       "to": "json",
       "type": "stdlib_dependency",

@@ -20,7 +20,8 @@
         "lineno": 5,
         "end_lineno": 13,
         "args": [],
-        "returns": null
+        "body": "def main():\n    print(\"Step 1: Scanning codebase...\")\n    save_structure()\n\n    print(\"Step 2: Building dependency graph...\")\n    builder = DependencyGraphBuilder()\n    graph = builder.save()\n\n    print(f\"Done. Built {len(graph['edges'])} edges\")",
+        "hash": "8329a08cbff6469817f00fe6d6e71a197b31021c101d8cd8d215837a46e5c8d0"
       }
     ]
   },
@@ -50,8 +51,8 @@
   },
   {
     "path": "./scanner.py",
-    "size": 2461,
-    "modified_at": 1777297397.81265,
+    "size": 2452,
+    "modified_at": 1777297831.48462,
     "language": "python",
     "imports": [
       {
@@ -70,81 +71,104 @@
     "functions": [
       {
         "name": "should_ignore",
-        "lineno": 20,
-        "end_lineno": 29,
+        "lineno": 19,
+        "end_lineno": 28,
         "args": [
           "path"
         ],
-        "returns": null
+        "body": "def should_ignore(path: str) -> bool:\n    parts = set(path.split(os.sep))\n\n    if any(part in IGNORE_DIRS for part in parts):\n        return True\n\n    if any(path.endswith(ext) for ext in IGNORE_EXTENSIONS):\n        return True\n\n    return False",
+        "hash": "4a0287b5b4fb9473cf31b2308c3b76b8297ec830e3b8c005c2ac4f96b2a8df96"
       },
       {
         "name": "detect_language",
-        "lineno": 32,
-        "end_lineno": 47,
+        "lineno": 31,
+        "end_lineno": 46,
         "args": [
           "path"
         ],
-        "returns": null
+        "body": "def detect_language(path: str) -> str:\n    if path.endswith(\".py\"):\n        return \"python\"\n    if path.endswith(\".js\"):\n        return \"javascript\"\n    if path.endswith(\".ts\"):\n        return \"typescript\"\n    if path.endswith(\".c\"):\n        return \"c\"\n    if path.endswith(\".h\"):\n        return \"c\"\n    if path.endswith(\".md\"):\n        return \"markdown\"\n    if path.endswith(\".json\"):\n        return \"json\"\n    return \"unknown\"",
+        "hash": "c26a827dd75f0023c233a5e20e28d48dc1cfa76ff2b9b56f735c842bbfaa9281"
       },
       {
         "name": "scan_directory",
-        "lineno": 50,
-        "end_lineno": 91,
+        "lineno": 49,
+        "end_lineno": 92,
         "args": [
           "root"
         ],
-        "returns": null
+        "body": "def scan_directory(root=\".\"):\n    results = []\n\n    for dirpath, dirnames, filenames in os.walk(root):\n\n        # prune ignored dirs early\n        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]\n\n        for file in filenames:\n            full_path = os.path.join(dirpath, file)\n\n            if should_ignore(full_path):\n                continue\n\n            try:\n                with open(full_path, \"r\", encoding=\"utf-8\") as f:\n                    content = f.read()\n            except Exception:\n                continue  # skip unreadable files entirely\n\n            is_python = full_path.endswith(\".py\")\n\n            if is_python:\n                imports = extract_imports(full_path, content)\n                functions = extract_functions(content)\n\n                # deterministic ordering (important for hashing stability)\n                functions.sort(key=lambda x: x[\"lineno\"])\n            else:\n                imports = []\n                functions = []\n\n            file_data = {\n                \"path\": full_path,\n                \"size\": len(content),\n                \"modified_at\": os.path.getmtime(full_path),\n                \"language\": detect_language(full_path),\n                \"imports\": imports,\n                \"functions\": functions\n            }\n\n            results.append(file_data)\n\n    return results",
+        "hash": "18a8b6eff7b2a6c1d84de49b7c82467c54e15ed96361aa1a91f6f9ec684aa9fb"
       },
       {
         "name": "save_structure",
-        "lineno": 94,
-        "end_lineno": 100,
+        "lineno": 95,
+        "end_lineno": 101,
         "args": [
           "output_path",
           "root"
         ],
-        "returns": null
+        "body": "def save_structure(output_path=\"structure.json\", root=\".\"):\n    data = scan_directory(root)\n\n    with open(output_path, \"w\", encoding=\"utf-8\") as f:\n        json.dump(data, f, indent=2)\n\n    return data",
+        "hash": "7d30257304ef633e63890a1150a04451ae9669ce9f91f4d232c1e89e59ca5ad7"
       }
     ]
   },
   {
-    "path": "./dependency_graph.json",
-    "size": 936,
-    "modified_at": 1777148005.796088,
-    "language": "json",
-    "imports": [],
-    "functions": []
-  },
-  {
     "path": "./extractor.py",
-    "size": 1391,
-    "modified_at": 1777297339.3134425,
+    "size": 1820,
+    "modified_at": 1777297792.8665056,
     "language": "python",
     "imports": [
       {
         "type": "local_or_external",
         "target": "ast"
+      },
+      {
+        "type": "local_or_external",
+        "target": "hashlib"
       }
     ],
     "functions": [
       {
         "name": "extract_imports",
-        "lineno": 4,
-        "end_lineno": 33,
+        "lineno": 5,
+        "end_lineno": 34,
         "args": [
           "path",
           "source"
         ],
-        "returns": null
+        "body": "def extract_imports(path, source):\n    \"\"\"\n    Returns structured imports:\n    [\n        {\"type\": \"...\", \"target\": \"...\"}\n    ]\n    \"\"\"\n    imports = []\n\n    try:\n        tree = ast.parse(source)\n    except Exception:\n        return imports\n\n    for node in ast.walk(tree):\n        if isinstance(node, ast.Import):\n            for alias in node.names:\n                imports.append({\n                    \"type\": \"local_or_external\",\n                    \"target\": alias.name.split(\".\")[0]\n                })\n\n        elif isinstance(node, ast.ImportFrom):\n            if node.module:\n                imports.append({\n                    \"type\": \"local_or_external\",\n                    \"target\": node.module.split(\".\")[0]\n                })\n\n    return imports",
+        "hash": "6f6007a6c66006cef7cc9f468cf0b9f84b7196f9cc8a03b3273dde09452ba4ed"
+      },
+      {
+        "name": "_get_source_segment",
+        "lineno": 36,
+        "end_lineno": 40,
+        "args": [
+          "source_lines",
+          "node"
+        ],
+        "body": "def _get_source_segment(source_lines, node):\n    \"\"\"Extract function body from source using line numbers\"\"\"\n    start = node.lineno - 1\n    end = getattr(node, \"end_lineno\", node.lineno)\n    return \"\\n\".join(source_lines[start:end])",
+        "hash": "6e6f2a79baa6bfe82071896491bd61cb1663e5bb569b7295275afe79710c75ba"
+      },
+      {
+        "name": "_hash",
+        "lineno": 43,
+        "end_lineno": 44,
+        "args": [
+          "text"
+        ],
+        "body": "def _hash(text: str) -> str:\n    return hashlib.sha256(text.encode(\"utf-8\")).hexdigest()",
+        "hash": "501935175956fcfe83cffbdc14e33fe61111c0c30115476075967a50e117b8f4"
       },
       {
         "name": "extract_functions",
-        "lineno": 36,
-        "end_lineno": 57,
+        "lineno": 47,
+        "end_lineno": 72,
         "args": [
           "source"
         ],
-        "returns": null
+        "body": "def extract_functions(source: str):\n    functions = []\n\n    try:\n        tree = ast.parse(source)\n        source_lines = source.splitlines()\n    except Exception:\n        return functions\n\n    for node in tree.body:\n        if isinstance(node, ast.FunctionDef):\n\n            body = _get_source_segment(source_lines, node)\n\n            functions.append({\n                \"name\": node.name,\n                \"lineno\": node.lineno,\n                \"end_lineno\": getattr(node, \"end_lineno\", node.lineno),\n                \"args\": [arg.arg for arg in node.args.args],\n\n                # NEW FIELDS (3.2 core)\n                \"body\": body,\n                \"hash\": _hash(body)\n            })\n\n    return functions",
+        "hash": "81808963042e6ccf8e36020906b2a339aa3b50746c199994cf12f7ae48fcd99a"
       }
     ]
   },
@@ -166,14 +190,6 @@
     "size": 731,
     "modified_at": 1777145940.7603157,
     "language": "markdown",
-    "imports": [],
-    "functions": []
-  },
-  {
-    "path": "./structure.json",
-    "size": 1658,
-    "modified_at": 1777148005.7953815,
-    "language": "json",
     "imports": [],
     "functions": []
   }

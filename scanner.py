@@ -2,7 +2,6 @@ import os
 import json
 from extractor import extract_imports, extract_functions
 
-
 IGNORE_DIRS = {
     ".git",
     "__pycache__",
@@ -52,7 +51,7 @@ def scan_directory(root="."):
 
     for dirpath, dirnames, filenames in os.walk(root):
 
-        # prevent descending into ignored directories
+        # prune ignored dirs early
         dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
 
         for file in filenames:
@@ -65,14 +64,16 @@ def scan_directory(root="."):
                 with open(full_path, "r", encoding="utf-8") as f:
                     content = f.read()
             except Exception:
-                content = ""
+                continue  # skip unreadable files entirely
 
-            # --------------------------------------------------
-            # IMPORTS + FUNCTIONS (only for Python files)
-            # --------------------------------------------------
-            if full_path.endswith(".py"):
+            is_python = full_path.endswith(".py")
+
+            if is_python:
                 imports = extract_imports(full_path, content)
                 functions = extract_functions(content)
+
+                # deterministic ordering (important for hashing stability)
+                functions.sort(key=lambda x: x["lineno"])
             else:
                 imports = []
                 functions = []
