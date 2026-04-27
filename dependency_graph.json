@@ -2,12 +2,6 @@
   "edges": [
     {
       "from": "main.py",
-      "to": "os",
-      "type": "stdlib_dependency",
-      "resolution": "resolved"
-    },
-    {
-      "from": "main.py",
       "to": "scanner.py",
       "type": "local_dependency",
       "resolution": "resolved"
@@ -26,7 +20,25 @@
     },
     {
       "from": "main.py",
+      "to": "state_manager.py",
+      "type": "local_dependency",
+      "resolution": "resolved"
+    },
+    {
+      "from": "state_manager.py",
       "to": "json",
+      "type": "stdlib_dependency",
+      "resolution": "resolved"
+    },
+    {
+      "from": "state_manager.py",
+      "to": "os",
+      "type": "stdlib_dependency",
+      "resolution": "resolved"
+    },
+    {
+      "from": "state_manager.py",
+      "to": "datetime",
       "type": "stdlib_dependency",
       "resolution": "resolved"
     },
