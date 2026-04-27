@@ -13,6 +13,15 @@
         "type": "local_or_external",
         "target": "dependency_graph"
       }
+    ],
+    "functions": [
+      {
+        "name": "main",
+        "lineno": 5,
+        "end_lineno": 13,
+        "args": [],
+        "returns": null
+      }
     ]
   },
   {
@@ -20,51 +29,122 @@
     "size": 0,
     "modified_at": 1777144700.870319,
     "language": "python",
-    "imports": []
+    "imports": [],
+    "functions": []
   },
   {
     "path": "./README.md",
     "size": 1170,
     "modified_at": 1777144475.8447797,
     "language": "markdown",
-    "imports": []
+    "imports": [],
+    "functions": []
   },
   {
     "path": "./cache.py",
     "size": 0,
     "modified_at": 1777144700.870319,
     "language": "python",
-    "imports": []
+    "imports": [],
+    "functions": []
   },
   {
     "path": "./scanner.py",
-    "size": 1950,
-    "modified_at": 1777147317.4238036,
+    "size": 2461,
+    "modified_at": 1777297397.81265,
     "language": "python",
     "imports": [
       {
-        "type": "stdlib",
+        "type": "local_or_external",
         "target": "os"
       },
       {
-        "type": "stdlib",
+        "type": "local_or_external",
         "target": "json"
       },
       {
         "type": "local_or_external",
         "target": "extractor"
       }
+    ],
+    "functions": [
+      {
+        "name": "should_ignore",
+        "lineno": 20,
+        "end_lineno": 29,
+        "args": [
+          "path"
+        ],
+        "returns": null
+      },
+      {
+        "name": "detect_language",
+        "lineno": 32,
+        "end_lineno": 47,
+        "args": [
+          "path"
+        ],
+        "returns": null
+      },
+      {
+        "name": "scan_directory",
+        "lineno": 50,
+        "end_lineno": 91,
+        "args": [
+          "root"
+        ],
+        "returns": null
+      },
+      {
+        "name": "save_structure",
+        "lineno": 94,
+        "end_lineno": 100,
+        "args": [
+          "output_path",
+          "root"
+        ],
+        "returns": null
+      }
     ]
   },
   {
+    "path": "./dependency_graph.json",
+    "size": 936,
+    "modified_at": 1777148005.796088,
+    "language": "json",
+    "imports": [],
+    "functions": []
+  },
+  {
     "path": "./extractor.py",
-    "size": 863,
-    "modified_at": 1777147327.0674498,
+    "size": 1391,
+    "modified_at": 1777297339.3134425,
     "language": "python",
     "imports": [
       {
         "type": "local_or_external",
         "target": "ast"
+      }
+    ],
+    "functions": [
+      {
+        "name": "extract_imports",
+        "lineno": 4,
+        "end_lineno": 33,
+        "args": [
+          "path",
+          "source"
+        ],
+        "returns": null
+      },
+      {
+        "name": "extract_functions",
+        "lineno": 36,
+        "end_lineno": 57,
+        "args": [
+          "source"
+        ],
+        "returns": null
       }
     ]
   },
@@ -75,16 +155,26 @@
     "language": "python",
     "imports": [
       {
-        "type": "stdlib",
+        "type": "local_or_external",
         "target": "json"
       }
-    ]
+    ],
+    "functions": []
   },
   {
     "path": "./PHASES.md",
     "size": 731,
     "modified_at": 1777145940.7603157,
     "language": "markdown",
-    "imports": []
+    "imports": [],
+    "functions": []
+  },
+  {
+    "path": "./structure.json",
+    "size": 1658,
+    "modified_at": 1777148005.7953815,
+    "language": "json",
+    "imports": [],
+    "functions": []
   }
 ]

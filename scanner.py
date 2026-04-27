@@ -1,6 +1,6 @@
 import os
 import json
-from extractor import extract_imports
+from extractor import extract_imports, extract_functions
 
 
 IGNORE_DIRS = {
@@ -52,6 +52,7 @@ def scan_directory(root="."):
 
     for dirpath, dirnames, filenames in os.walk(root):
 
+        # prevent descending into ignored directories
         dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
 
         for file in filenames:
@@ -66,12 +67,23 @@ def scan_directory(root="."):
             except Exception:
                 content = ""
 
+            # --------------------------------------------------
+            # IMPORTS + FUNCTIONS (only for Python files)
+            # --------------------------------------------------
+            if full_path.endswith(".py"):
+                imports = extract_imports(full_path, content)
+                functions = extract_functions(content)
+            else:
+                imports = []
+                functions = []
+
             file_data = {
                 "path": full_path,
                 "size": len(content),
                 "modified_at": os.path.getmtime(full_path),
                 "language": detect_language(full_path),
-                "imports": extract_imports(full_path, content)
+                "imports": imports,
+                "functions": functions
             }
 
             results.append(file_data)

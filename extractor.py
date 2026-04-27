@@ -1,41 +1,57 @@
 import ast
 
 
-STD_LIB = {
-    "os", "sys", "json", "math", "time", "re",
-    "datetime", "typing", "pathlib", "collections"
-}
-
-
-def classify(module_name: str):
-    base = module_name.split(".")[0]
-
-    if base in STD_LIB:
-        return {"type": "stdlib", "target": module_name}
-
-    return {"type": "local_or_external", "target": module_name}
-
-
-def extract_imports(file_path: str, source: str):
-
-    if not file_path.endswith(".py"):
-        return []
+def extract_imports(path, source):
+    """
+    Returns structured imports:
+    [
+        {"type": "...", "target": "..."}
+    ]
+    """
+    imports = []
 
     try:
         tree = ast.parse(source)
-    except SyntaxError:
-        return []
-
-    imports = []
+    except Exception:
+        return imports
 
     for node in ast.walk(tree):
-
         if isinstance(node, ast.Import):
-            for n in node.names:
-                imports.append(classify(n.name))
+            for alias in node.names:
+                imports.append({
+                    "type": "local_or_external",
+                    "target": alias.name.split(".")[0]
+                })
 
         elif isinstance(node, ast.ImportFrom):
-            module = node.module or ""
-            imports.append(classify(module))
+            if node.module:
+                imports.append({
+                    "type": "local_or_external",
+                    "target": node.module.split(".")[0]
+                })
 
     return imports
+
+
+def extract_functions(source):
+    """
+    Extract top-level function definitions with metadata
+    """
+    functions = []
+
+    try:
+        tree = ast.parse(source)
+    except Exception:
+        return functions
+
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef):
+            functions.append({
+                "name": node.name,
+                "lineno": node.lineno,
+                "end_lineno": getattr(node, "end_lineno", node.lineno),
+                "args": [arg.arg for arg in node.args.args],
+                "returns": None  # reserved for later
+            })
+
+    return functions
