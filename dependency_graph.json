@@ -2,6 +2,12 @@
   "edges": [
     {
       "from": "main.py",
+      "to": "os",
+      "type": "stdlib_dependency",
+      "resolution": "resolved"
+    },
+    {
+      "from": "main.py",
       "to": "scanner.py",
       "type": "local_dependency",
       "resolution": "resolved"
@@ -10,6 +16,18 @@
       "from": "main.py",
       "to": "dependency_graph.py",
       "type": "local_dependency",
+      "resolution": "resolved"
+    },
+    {
+      "from": "main.py",
+      "to": "diff_engine.py",
+      "type": "local_dependency",
+      "resolution": "resolved"
+    },
+    {
+      "from": "main.py",
+      "to": "json",
+      "type": "stdlib_dependency",
       "resolution": "resolved"
     },
     {
@@ -45,6 +63,18 @@
     {
       "from": "dependency_graph.py",
       "to": "json",
+      "type": "stdlib_dependency",
+      "resolution": "resolved"
+    },
+    {
+      "from": "diff_engine.py",
+      "to": "json",
+      "type": "stdlib_dependency",
+      "resolution": "resolved"
+    },
+    {
+      "from": "diff_engine.py",
+      "to": "typing",
       "type": "stdlib_dependency",
       "resolution": "resolved"
     }

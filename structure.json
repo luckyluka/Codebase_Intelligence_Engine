@@ -1,10 +1,14 @@
 [
   {
     "path": "./main.py",
-    "size": 375,
-    "modified_at": 1777147457.8270602,
+    "size": 1031,
+    "modified_at": 1777298120.6013868,
     "language": "python",
     "imports": [
+      {
+        "type": "local_or_external",
+        "target": "os"
+      },
       {
         "type": "local_or_external",
         "target": "scanner"
@@ -12,16 +16,24 @@
       {
         "type": "local_or_external",
         "target": "dependency_graph"
+      },
+      {
+        "type": "local_or_external",
+        "target": "diff_engine"
+      },
+      {
+        "type": "local_or_external",
+        "target": "json"
       }
     ],
     "functions": [
       {
         "name": "main",
-        "lineno": 5,
-        "end_lineno": 13,
+        "lineno": 7,
+        "end_lineno": 35,
         "args": [],
-        "body": "def main():\n    print(\"Step 1: Scanning codebase...\")\n    save_structure()\n\n    print(\"Step 2: Building dependency graph...\")\n    builder = DependencyGraphBuilder()\n    graph = builder.save()\n\n    print(f\"Done. Built {len(graph['edges'])} edges\")",
-        "hash": "8329a08cbff6469817f00fe6d6e71a197b31021c101d8cd8d215837a46e5c8d0"
+        "body": "def main():\n    print(\"Step 0: Loading previous snapshot...\")\n\n    old_path = \"structure.json\"\n\n    if os.path.exists(old_path):\n        import json\n        with open(old_path, \"r\", encoding=\"utf-8\") as f:\n            old_structure = json.load(f)\n    else:\n        old_structure = []\n\n    print(\"Step 1: Scanning codebase...\")\n    new_structure = save_structure()\n\n    print(\"Step 2: Building dependency graph...\")\n    builder = DependencyGraphBuilder()\n    graph = builder.save()\n\n    print(\"Step 3: Computing changes...\")\n\n    engine = DiffEngine(new_data=new_structure)\n    engine.old_path = old_path  # explicitly reuse same file\n    diff = engine.compute_diff()\n\n    print(f\"Done. Built {len(graph['edges'])} edges\")\n    print(f\"Added: {len(diff['added'])}\")\n    print(f\"Modified: {len(diff['modified'])}\")\n    print(f\"Removed: {len(diff['removed'])}\")",
+        "hash": "c9d35c734e88fde3ccd2074d5c57e0b496432527bfe83101232781f3d85968db"
       }
     ]
   },
@@ -113,6 +125,14 @@
     ]
   },
   {
+    "path": "./dependency_graph.json",
+    "size": 1715,
+    "modified_at": 1777298123.476676,
+    "language": "json",
+    "imports": [],
+    "functions": []
+  },
+  {
     "path": "./extractor.py",
     "size": 1820,
     "modified_at": 1777297792.8665056,
@@ -175,7 +195,7 @@
   {
     "path": "./dependency_graph.py",
     "size": 2996,
-    "modified_at": 1777147998.398265,
+    "modified_at": 1777298055.489856,
     "language": "python",
     "imports": [
       {
@@ -190,6 +210,42 @@
     "size": 731,
     "modified_at": 1777145940.7603157,
     "language": "markdown",
+    "imports": [],
+    "functions": []
+  },
+  {
+    "path": "./diff_engine.py",
+    "size": 1617,
+    "modified_at": 1777297972.4832497,
+    "language": "python",
+    "imports": [
+      {
+        "type": "local_or_external",
+        "target": "json"
+      },
+      {
+        "type": "local_or_external",
+        "target": "typing"
+      }
+    ],
+    "functions": [
+      {
+        "name": "run_diff",
+        "lineno": 65,
+        "end_lineno": 67,
+        "args": [
+          "new_structure"
+        ],
+        "body": "def run_diff(new_structure):\n    engine = DiffEngine(new_data=new_structure)\n    return engine.compute_diff()",
+        "hash": "09ebe4951280a0d9d093dcceb85c7552c4cc6a971e2dc29f4d9f52c0d74adeac"
+      }
+    ]
+  },
+  {
+    "path": "./structure.json",
+    "size": 10641,
+    "modified_at": 1777298123.4762845,
+    "language": "json",
     "imports": [],
     "functions": []
   }
