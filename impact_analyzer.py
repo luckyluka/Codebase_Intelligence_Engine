@@ -1,46 +1,37 @@
-from collections import defaultdict
-
-
 class ImpactAnalyzer:
     def __init__(self, graph):
-        self.graph = graph["edges"]
+        self.graph = graph
+        self.reverse_index = graph.get("reverse_index", {})
 
-        self.reverse_map = defaultdict(list)
-
-        for edge in self.graph:
-            src = self._norm(edge["from"])
-            dst = self._norm(edge["to"])
-            self.reverse_map[dst].append(src)
-
-    def _norm(self, p):
-        return p.replace("./", "")
-
-    def get_direct_impact(self, changed_files):
-        changed_files = [self._norm(f) for f in changed_files]
-
-        impacted = set()
-
-        for f in changed_files:
-            for dep in self.reverse_map.get(f, []):
-                impacted.add(dep)
-
-        return list(impacted)
-
-    def get_transitive_impact(self, changed_files, depth=3):
-        changed_files = [self._norm(f) for f in changed_files]
-
+    def compute(self, changed_files):
+        direct = set()
         visited = set()
-        frontier = set(changed_files)
 
-        for _ in range(depth):
-            next_frontier = set()
+        # ------------------------
+        # direct impact
+        # ------------------------
+        for file in changed_files:
+            for dep in self.reverse_index.get(file, []):
+                direct.add(dep)
 
-            for node in frontier:
-                for dep in self.reverse_map.get(node, []):
-                    if dep not in visited:
-                        next_frontier.add(dep)
+        # ------------------------
+        # transitive closure (BFS)
+        # ------------------------
+        stack = list(direct)
 
-            visited.update(frontier)
-            frontier = next_frontier
+        while stack:
+            node = stack.pop()
 
-        return list(visited - set(changed_files))
+            if node in visited:
+                continue
+
+            visited.add(node)
+
+            for parent in self.reverse_index.get(node, []):
+                if parent not in visited:
+                    stack.append(parent)
+
+        return {
+            "direct": sorted(direct),
+            "transitive": sorted(visited)
+        }

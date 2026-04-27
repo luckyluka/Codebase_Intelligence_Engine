@@ -1,7 +1,7 @@
 from scanner import save_structure
 from dependency_graph import DependencyGraphBuilder
 from diff_engine import DiffEngine
-
+from impact_analyzer import ImpactAnalyzer
 import json
 import os
 
@@ -34,9 +34,24 @@ def main():
     print(f"Removed: {len(diff['removed'])}")
 
     print("Step 4: Computing impact analysis...")
-    # placeholder for Phase 5 expansion
-    print("Directly impacted files: 0")
-    print("Transitive impact scope: 0")
+
+    with open("dependency_graph.json", "r") as f:
+        graph = json.load(f)
+
+    analyzer = ImpactAnalyzer(graph)
+
+    changed_files = [
+        f["path"]
+        for f in diff["modified"]
+    ] + [
+        f["path"]
+        for f in diff["added"]
+    ]
+
+    impact = analyzer.compute(changed_files)
+
+    print(f"Directly impacted files: {len(impact['direct'])}")
+    print(f"Transitive impact scope: {len(impact['transitive'])}")
 
     print("Step 5: Saving new snapshot...")
     with open("snapshot_curr.json", "w") as f:

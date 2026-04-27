@@ -25,16 +25,16 @@
   },
   {
     "path": "/home/luka/Documents/Codebase_Intelligence_Engine/dependency_graph.json",
-    "size": 3357,
-    "modified_at": 1777298962.8864794,
+    "size": 5101,
+    "modified_at": 1777299480.4166222,
     "language": "json",
     "imports": [],
     "functions": []
   },
   {
     "path": "/home/luka/Documents/Codebase_Intelligence_Engine/dependency_graph.py",
-    "size": 2767,
-    "modified_at": 1777298694.1783776,
+    "size": 3634,
+    "modified_at": 1777299292.6587346,
     "language": "python",
     "imports": [
       {
@@ -144,21 +144,16 @@
   },
   {
     "path": "/home/luka/Documents/Codebase_Intelligence_Engine/impact_analyzer.py",
-    "size": 1247,
-    "modified_at": 1777298703.6535194,
+    "size": 973,
+    "modified_at": 1777299477.5592575,
     "language": "python",
-    "imports": [
-      {
-        "type": "local_or_external",
-        "target": "collections"
-      }
-    ],
+    "imports": [],
     "functions": []
   },
   {
     "path": "/home/luka/Documents/Codebase_Intelligence_Engine/main.py",
-    "size": 1319,
-    "modified_at": 1777298764.9897616,
+    "size": 1676,
+    "modified_at": 1777299555.37921,
     "language": "python",
     "imports": [
       {
@@ -172,6 +167,10 @@
       {
         "type": "local_or_external",
         "target": "diff_engine"
+      },
+      {
+        "type": "local_or_external",
+        "target": "impact_analyzer"
       },
       {
         "type": "local_or_external",
@@ -196,10 +195,10 @@
       {
         "name": "main",
         "lineno": 16,
-        "end_lineno": 47,
+        "end_lineno": 62,
         "args": [],
-        "body": "def main():\n    print(\"Step 0: Loading previous snapshot...\")\n\n    prev = load_snapshot(\"snapshot_prev.json\")\n\n    print(\"Step 1: Scanning codebase...\")\n    curr = save_structure(\"structure.json\")\n\n    print(\"Step 2: Building dependency graph...\")\n    builder = DependencyGraphBuilder()\n    graph = builder.save()\n\n    print(\"Step 3: Computing changes...\")\n    diff = DiffEngine(prev, curr).compute()\n\n    print(\"Done computing diff.\")\n    print(f\"Added: {len(diff['added'])}\")\n    print(f\"Modified: {len(diff['modified'])}\")\n    print(f\"Removed: {len(diff['removed'])}\")\n\n    print(\"Step 4: Computing impact analysis...\")\n    # placeholder for Phase 5 expansion\n    print(\"Directly impacted files: 0\")\n    print(\"Transitive impact scope: 0\")\n\n    print(\"Step 5: Saving new snapshot...\")\n    with open(\"snapshot_curr.json\", \"w\") as f:\n        json.dump(curr, f, indent=2)\n\n    print(\"Step 6: Promoting curr \u2192 prev...\")\n    os.replace(\"snapshot_curr.json\", \"snapshot_prev.json\")\n    print(\"done\")",
-        "hash": "f6e9af31bd8fc0b8001355cbb66c26c8a5498f70cf504b00e09da7a80d45fa9a"
+        "body": "def main():\n    print(\"Step 0: Loading previous snapshot...\")\n\n    prev = load_snapshot(\"snapshot_prev.json\")\n\n    print(\"Step 1: Scanning codebase...\")\n    curr = save_structure(\"structure.json\")\n\n    print(\"Step 2: Building dependency graph...\")\n    builder = DependencyGraphBuilder()\n    graph = builder.save()\n\n    print(\"Step 3: Computing changes...\")\n    diff = DiffEngine(prev, curr).compute()\n\n    print(\"Done computing diff.\")\n    print(f\"Added: {len(diff['added'])}\")\n    print(f\"Modified: {len(diff['modified'])}\")\n    print(f\"Removed: {len(diff['removed'])}\")\n\n    print(\"Step 4: Computing impact analysis...\")\n\n    with open(\"dependency_graph.json\", \"r\") as f:\n        graph = json.load(f)\n\n    analyzer = ImpactAnalyzer(graph)\n\n    changed_files = [\n        f[\"path\"]\n        for f in diff[\"modified\"]\n    ] + [\n        f[\"path\"]\n        for f in diff[\"added\"]\n    ]\n\n    impact = analyzer.compute(changed_files)\n\n    print(f\"Directly impacted files: {len(impact['direct'])}\")\n    print(f\"Transitive impact scope: {len(impact['transitive'])}\")\n\n    print(\"Step 5: Saving new snapshot...\")\n    with open(\"snapshot_curr.json\", \"w\") as f:\n        json.dump(curr, f, indent=2)\n\n    print(\"Step 6: Promoting curr \u2192 prev...\")\n    os.replace(\"snapshot_curr.json\", \"snapshot_prev.json\")\n    print(\"done\")",
+        "hash": "05a8ed4793249407db056957490d9b6979266d175e52ab73e9e030cd535f53c9"
       }
     ]
   },
@@ -278,8 +277,8 @@
   },
   {
     "path": "/home/luka/Documents/Codebase_Intelligence_Engine/snapshot_prev.json",
-    "size": 14969,
-    "modified_at": 1777298962.8871708,
+    "size": 15410,
+    "modified_at": 1777299296.2217312,
     "language": "json",
     "imports": [],
     "functions": []
@@ -323,8 +322,8 @@
   },
   {
     "path": "/home/luka/Documents/Codebase_Intelligence_Engine/structure.json",
-    "size": 14969,
-    "modified_at": 1777298962.8858635,
+    "size": 15320,
+    "modified_at": 1777299480.4163306,
     "language": "json",
     "imports": [],
     "functions": []

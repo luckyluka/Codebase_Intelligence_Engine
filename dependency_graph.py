@@ -10,15 +10,19 @@ class DependencyGraphBuilder:
             "typing", "pathlib", "datetime"
         }
 
+    def _norm(self, path: str) -> str:
+        return path.replace("./", "")
+
     def _resolve_local(self, target, files):
+        """
+        Resolve module -> file path
+        scanner -> scanner.py
+        """
         expected = f"{target}.py"
         for f in files:
             if f.endswith(expected):
                 return f
         return None
-
-    def _norm(self, p):
-        return p.replace("./", "")
 
     def build(self):
         with open(self.structure_path, "r", encoding="utf-8") as f:
@@ -36,13 +40,27 @@ class DependencyGraphBuilder:
                 if not isinstance(imp, dict):
                     continue
 
-                imp_type = imp.get("type")
                 target = imp.get("target")
+                imp_type = imp.get("type")
 
                 if not target:
                     continue
 
-                if imp_type == "local_or_external":
+                # ---------------------------
+                # STDLIB
+                # ---------------------------
+                if target in self.stdlib or imp_type == "stdlib":
+                    edges.append({
+                        "from": src,
+                        "to": target,
+                        "type": "stdlib_dependency",
+                        "resolution": "resolved"
+                    })
+
+                # ---------------------------
+                # LOCAL / EXTERNAL
+                # ---------------------------
+                elif imp_type == "local_or_external":
                     local = self._resolve_local(target, files)
 
                     if local:
@@ -60,15 +78,28 @@ class DependencyGraphBuilder:
                             "resolution": "unresolved"
                         })
 
-                elif imp_type == "stdlib":
-                    edges.append({
-                        "from": src,
-                        "to": target,
-                        "type": "stdlib_dependency",
-                        "resolution": "resolved"
-                    })
+        edges = self._deduplicate(edges)
 
-        return {"edges": self._deduplicate(edges)}
+        return {
+            "edges": edges,
+            "reverse_index": self._build_reverse_index(edges)
+        }
+
+    def _build_reverse_index(self, edges):
+        """
+        to -> list of dependents
+        required for impact analysis
+        """
+        rev = {}
+
+        for e in edges:
+            to = e["to"]
+            frm = e["from"]
+
+            rev.setdefault(to, set()).add(frm)
+
+        # convert sets to lists for JSON safety
+        return {k: list(v) for k, v in rev.items()}
 
     def _deduplicate(self, edges):
         seen = set()
