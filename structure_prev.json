@@ -1,0 +1,347 @@
+[
+  {
+    "path": "main.py",
+    "size": 2872,
+    "modified_at": 1777298559.3843842,
+    "language": "python",
+    "imports": [
+      {
+        "type": "local_or_external",
+        "target": "scanner"
+      },
+      {
+        "type": "local_or_external",
+        "target": "dependency_graph"
+      },
+      {
+        "type": "local_or_external",
+        "target": "diff_engine"
+      },
+      {
+        "type": "local_or_external",
+        "target": "impact_analyzer"
+      },
+      {
+        "type": "local_or_external",
+        "target": "json"
+      },
+      {
+        "type": "local_or_external",
+        "target": "os"
+      }
+    ],
+    "functions": [
+      {
+        "name": "load_snapshot",
+        "lineno": 14,
+        "end_lineno": 18,
+        "args": [
+          "path"
+        ],
+        "body": "def load_snapshot(path):\n    if not os.path.exists(path):\n        return []\n    with open(path, \"r\", encoding=\"utf-8\") as f:\n        return json.load(f)",
+        "hash": "7e095c8fbc58e07d3652de078e2b0b4f60110ae5457aa53f1aee217b724ffb3c"
+      },
+      {
+        "name": "main",
+        "lineno": 24,
+        "end_lineno": 98,
+        "args": [],
+        "body": "def main():\n    print(\"Step 0: Loading previous snapshot...\")\n    old_snapshot = load_snapshot(\"structure_prev.json\")\n\n    print(\"Step 1: Scanning codebase...\")\n    new_snapshot = save_structure()\n\n    print(\"Step 2: Building dependency graph...\")\n    builder = DependencyGraphBuilder()\n    graph = builder.save()\n\n    print(\"Step 3: Computing changes...\")\n    diff = diff_snapshots(old_snapshot, new_snapshot)\n\n    # -----------------------------\n    # File-level stats\n    # -----------------------------\n    added_files = diff[\"files\"][\"added\"]\n    removed_files = diff[\"files\"][\"removed\"]\n    modified_files = diff[\"files\"][\"modified\"]\n\n    print(\"Done computing diff.\")\n    print(f\"Added: {len(added_files)}\")\n    print(f\"Modified: {len(modified_files)}\")\n    print(f\"Removed: {len(removed_files)}\")\n\n    # -----------------------------\n    # Function-level stats\n    # -----------------------------\n    func_added = diff[\"functions\"][\"added\"]\n    func_removed = diff[\"functions\"][\"removed\"]\n    func_modified = diff[\"functions\"][\"modified\"]\n\n    print(\"\\nFunction changes:\")\n    print(f\"Added: {len(func_added)}\")\n    print(f\"Modified: {len(func_modified)}\")\n    print(f\"Removed: {len(func_removed)}\")\n\n    # -----------------------------\n    # IMPACT ANALYSIS (NEW)\n    # -----------------------------\n    print(\"\\nStep 4: Computing impact analysis...\")\n\n    analyzer = ImpactAnalyzer(graph)\n\n    changed_files = list(set(added_files + modified_files))\n\n    direct_impact = analyzer.get_direct_impact(changed_files)\n    transitive_impact = analyzer.get_transitive_impact(changed_files)\n\n    print(f\"Directly impacted files: {len(direct_impact)}\")\n    print(f\"Transitive impact scope: {len(transitive_impact)}\")\n\n    # -----------------------------\n    # Step 5: Save snapshot\n    # -----------------------------\n    print(\"\\nStep 5: Saving new snapshot...\")\n\n    with open(\"structure_prev.json\", \"w\", encoding=\"utf-8\") as f:\n        json.dump(new_snapshot, f, indent=2)\n\n    print(\"Step 6: Promoting curr \u2192 prev... done\")\n\n    # -----------------------------\n    # Optional structured output (for future AI layer)\n    # -----------------------------\n    result = {\n        \"diff\": diff,\n        \"impact\": {\n            \"direct\": direct_impact,\n            \"transitive\": transitive_impact\n        }\n    }\n\n    return result",
+        "hash": "09eb4d59c515bde668df533c74f5cf0cabe924f26a6d84f171ed02111023392d"
+      }
+    ]
+  },
+  {
+    "path": "structure_prev.json",
+    "size": 16976,
+    "modified_at": 1777298609.7302518,
+    "language": "json",
+    "imports": [],
+    "functions": []
+  },
+  {
+    "path": "summarizer.py",
+    "size": 0,
+    "modified_at": 1777144700.870319,
+    "language": "python",
+    "imports": [],
+    "functions": []
+  },
+  {
+    "path": "state_manager.py",
+    "size": 1105,
+    "modified_at": 1777298286.2374637,
+    "language": "python",
+    "imports": [
+      {
+        "type": "local_or_external",
+        "target": "json"
+      },
+      {
+        "type": "local_or_external",
+        "target": "os"
+      },
+      {
+        "type": "local_or_external",
+        "target": "datetime"
+      }
+    ],
+    "functions": []
+  },
+  {
+    "path": "impact_analyzer.py",
+    "size": 1247,
+    "modified_at": 1777298703.6535194,
+    "language": "python",
+    "imports": [
+      {
+        "type": "local_or_external",
+        "target": "collections"
+      }
+    ],
+    "functions": []
+  },
+  {
+    "path": "README.md",
+    "size": 1170,
+    "modified_at": 1777144475.8447797,
+    "language": "markdown",
+    "imports": [],
+    "functions": []
+  },
+  {
+    "path": "cache.py",
+    "size": 0,
+    "modified_at": 1777144700.870319,
+    "language": "python",
+    "imports": [],
+    "functions": []
+  },
+  {
+    "path": "scanner.py",
+    "size": 2319,
+    "modified_at": 1777298685.586627,
+    "language": "python",
+    "imports": [
+      {
+        "type": "local_or_external",
+        "target": "os"
+      },
+      {
+        "type": "local_or_external",
+        "target": "json"
+      },
+      {
+        "type": "local_or_external",
+        "target": "extractor"
+      }
+    ],
+    "functions": [
+      {
+        "name": "should_ignore",
+        "lineno": 10,
+        "end_lineno": 19,
+        "args": [
+          "path"
+        ],
+        "body": "def should_ignore(path: str) -> bool:\n    parts = set(path.split(os.sep))\n\n    if any(part in IGNORE_DIRS for part in parts):\n        return True\n\n    if any(path.endswith(ext) for ext in IGNORE_EXTENSIONS):\n        return True\n\n    return False",
+        "hash": "4a0287b5b4fb9473cf31b2308c3b76b8297ec830e3b8c005c2ac4f96b2a8df96"
+      },
+      {
+        "name": "detect_language",
+        "lineno": 22,
+        "end_lineno": 37,
+        "args": [
+          "path"
+        ],
+        "body": "def detect_language(path: str) -> str:\n    if path.endswith(\".py\"):\n        return \"python\"\n    if path.endswith(\".js\"):\n        return \"javascript\"\n    if path.endswith(\".ts\"):\n        return \"typescript\"\n    if path.endswith(\".c\"):\n        return \"c\"\n    if path.endswith(\".h\"):\n        return \"c\"\n    if path.endswith(\".md\"):\n        return \"markdown\"\n    if path.endswith(\".json\"):\n        return \"json\"\n    return \"unknown\"",
+        "hash": "c26a827dd75f0023c233a5e20e28d48dc1cfa76ff2b9b56f735c842bbfaa9281"
+      },
+      {
+        "name": "normalize",
+        "lineno": 40,
+        "end_lineno": 41,
+        "args": [
+          "path"
+        ],
+        "body": "def normalize(path: str) -> str:\n    return path.replace(\"./\", \"\")",
+        "hash": "7e3196e14e9217aecbd6b384eb4af6d4e26d6ecf9e43793a6e54612f9298c626"
+      },
+      {
+        "name": "scan_directory",
+        "lineno": 44,
+        "end_lineno": 81,
+        "args": [
+          "root"
+        ],
+        "body": "def scan_directory(root=\".\"):\n    results = []\n\n    for dirpath, dirnames, filenames in os.walk(root):\n        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]\n\n        for file in filenames:\n            full_path = os.path.join(dirpath, file)\n\n            if should_ignore(full_path):\n                continue\n\n            try:\n                with open(full_path, \"r\", encoding=\"utf-8\") as f:\n                    content = f.read()\n            except Exception:\n                continue\n\n            is_python = full_path.endswith(\".py\")\n\n            if is_python:\n                imports = extract_imports(full_path, content)\n                functions = extract_functions(content)\n                functions.sort(key=lambda x: x[\"lineno\"])\n            else:\n                imports = []\n                functions = []\n\n            results.append({\n                \"path\": normalize(full_path),\n                \"size\": len(content),\n                \"modified_at\": os.path.getmtime(full_path),\n                \"language\": detect_language(full_path),\n                \"imports\": imports,\n                \"functions\": functions\n            })\n\n    return results",
+        "hash": "4db3a19abbc728014988990bbc796d37275b33fc74a61ad74909d2375124888e"
+      },
+      {
+        "name": "save_structure",
+        "lineno": 84,
+        "end_lineno": 90,
+        "args": [
+          "output_path",
+          "root"
+        ],
+        "body": "def save_structure(output_path=\"structure.json\", root=\".\"):\n    data = scan_directory(root)\n\n    with open(output_path, \"w\", encoding=\"utf-8\") as f:\n        json.dump(data, f, indent=2)\n\n    return data",
+        "hash": "7d30257304ef633e63890a1150a04451ae9669ce9f91f4d232c1e89e59ca5ad7"
+      }
+    ]
+  },
+  {
+    "path": "dependency_graph.json",
+    "size": 2135,
+    "modified_at": 1777298609.729472,
+    "language": "json",
+    "imports": [],
+    "functions": []
+  },
+  {
+    "path": "extractor.py",
+    "size": 1820,
+    "modified_at": 1777297792.8665056,
+    "language": "python",
+    "imports": [
+      {
+        "type": "local_or_external",
+        "target": "ast"
+      },
+      {
+        "type": "local_or_external",
+        "target": "hashlib"
+      }
+    ],
+    "functions": [
+      {
+        "name": "extract_imports",
+        "lineno": 5,
+        "end_lineno": 34,
+        "args": [
+          "path",
+          "source"
+        ],
+        "body": "def extract_imports(path, source):\n    \"\"\"\n    Returns structured imports:\n    [\n        {\"type\": \"...\", \"target\": \"...\"}\n    ]\n    \"\"\"\n    imports = []\n\n    try:\n        tree = ast.parse(source)\n    except Exception:\n        return imports\n\n    for node in ast.walk(tree):\n        if isinstance(node, ast.Import):\n            for alias in node.names:\n                imports.append({\n                    \"type\": \"local_or_external\",\n                    \"target\": alias.name.split(\".\")[0]\n                })\n\n        elif isinstance(node, ast.ImportFrom):\n            if node.module:\n                imports.append({\n                    \"type\": \"local_or_external\",\n                    \"target\": node.module.split(\".\")[0]\n                })\n\n    return imports",
+        "hash": "6f6007a6c66006cef7cc9f468cf0b9f84b7196f9cc8a03b3273dde09452ba4ed"
+      },
+      {
+        "name": "_get_source_segment",
+        "lineno": 36,
+        "end_lineno": 40,
+        "args": [
+          "source_lines",
+          "node"
+        ],
+        "body": "def _get_source_segment(source_lines, node):\n    \"\"\"Extract function body from source using line numbers\"\"\"\n    start = node.lineno - 1\n    end = getattr(node, \"end_lineno\", node.lineno)\n    return \"\\n\".join(source_lines[start:end])",
+        "hash": "6e6f2a79baa6bfe82071896491bd61cb1663e5bb569b7295275afe79710c75ba"
+      },
+      {
+        "name": "_hash",
+        "lineno": 43,
+        "end_lineno": 44,
+        "args": [
+          "text"
+        ],
+        "body": "def _hash(text: str) -> str:\n    return hashlib.sha256(text.encode(\"utf-8\")).hexdigest()",
+        "hash": "501935175956fcfe83cffbdc14e33fe61111c0c30115476075967a50e117b8f4"
+      },
+      {
+        "name": "extract_functions",
+        "lineno": 47,
+        "end_lineno": 72,
+        "args": [
+          "source"
+        ],
+        "body": "def extract_functions(source: str):\n    functions = []\n\n    try:\n        tree = ast.parse(source)\n        source_lines = source.splitlines()\n    except Exception:\n        return functions\n\n    for node in tree.body:\n        if isinstance(node, ast.FunctionDef):\n\n            body = _get_source_segment(source_lines, node)\n\n            functions.append({\n                \"name\": node.name,\n                \"lineno\": node.lineno,\n                \"end_lineno\": getattr(node, \"end_lineno\", node.lineno),\n                \"args\": [arg.arg for arg in node.args.args],\n\n                # NEW FIELDS (3.2 core)\n                \"body\": body,\n                \"hash\": _hash(body)\n            })\n\n    return functions",
+        "hash": "81808963042e6ccf8e36020906b2a339aa3b50746c199994cf12f7ae48fcd99a"
+      }
+    ]
+  },
+  {
+    "path": "dependency_graph.py",
+    "size": 2767,
+    "modified_at": 1777298694.1783776,
+    "language": "python",
+    "imports": [
+      {
+        "type": "local_or_external",
+        "target": "json"
+      }
+    ],
+    "functions": []
+  },
+  {
+    "path": "PHASES.md",
+    "size": 731,
+    "modified_at": 1777145940.7603157,
+    "language": "markdown",
+    "imports": [],
+    "functions": []
+  },
+  {
+    "path": "diff_engine.py",
+    "size": 2652,
+    "modified_at": 1777298606.8566003,
+    "language": "python",
+    "imports": [],
+    "functions": [
+      {
+        "name": "compute_file_map",
+        "lineno": 1,
+        "end_lineno": 6,
+        "args": [
+          "snapshot"
+        ],
+        "body": "def compute_file_map(snapshot):\n    \"\"\"\n    Converts snapshot list into dict:\n    path -> file entry\n    \"\"\"\n    return {f[\"path\"]: f for f in snapshot}",
+        "hash": "2ffa87d5f34563b9f78c196c7b59eebba10833a5b75d575e630da7c9bb890e20"
+      },
+      {
+        "name": "diff_functions",
+        "lineno": 9,
+        "end_lineno": 53,
+        "args": [
+          "old_funcs",
+          "new_funcs"
+        ],
+        "body": "def diff_functions(old_funcs, new_funcs):\n    \"\"\"\n    Function-level diff using stable hashes.\n    Returns added / removed / modified.\n    \"\"\"\n\n    old_by_hash = {f[\"hash\"]: f for f in old_funcs}\n    new_by_hash = {f[\"hash\"]: f for f in new_funcs}\n\n    old_hashes = set(old_by_hash.keys())\n    new_hashes = set(new_by_hash.keys())\n\n    added = [new_by_hash[h] for h in new_hashes - old_hashes]\n    removed = [old_by_hash[h] for h in old_hashes - new_hashes]\n\n    # MODIFIED = same function name, different hash\n    modified = []\n\n    old_by_name = {}\n    new_by_name = {}\n\n    for f in old_funcs:\n        old_by_name.setdefault(f[\"name\"], []).append(f)\n\n    for f in new_funcs:\n        new_by_name.setdefault(f[\"name\"], []).append(f)\n\n    common_names = set(old_by_name.keys()) & set(new_by_name.keys())\n\n    for name in common_names:\n        old_set = {f[\"hash\"] for f in old_by_name[name]}\n        new_set = {f[\"hash\"] for f in new_by_name[name]}\n\n        if old_set != new_set:\n            modified.append({\n                \"function\": name,\n                \"old\": old_by_name[name],\n                \"new\": new_by_name[name]\n            })\n\n    return {\n        \"added\": added,\n        \"removed\": removed,\n        \"modified\": modified\n    }",
+        "hash": "4b528b0a7f0d20f60e4d2f51df5d77bf1444421ca5aa9f317eb4d36445af634e"
+      },
+      {
+        "name": "diff_snapshots",
+        "lineno": 56,
+        "end_lineno": 104,
+        "args": [
+          "old_snapshot",
+          "new_snapshot"
+        ],
+        "body": "def diff_snapshots(old_snapshot, new_snapshot):\n    \"\"\"\n    Full diff:\n    - files\n    - functions per file\n    \"\"\"\n\n    old_map = compute_file_map(old_snapshot)\n    new_map = compute_file_map(new_snapshot)\n\n    old_files = set(old_map.keys())\n    new_files = set(new_map.keys())\n\n    added_files = list(new_files - old_files)\n    removed_files = list(old_files - new_files)\n    common_files = old_files & new_files\n\n    modified_files = []\n\n    function_changes = {\n        \"added\": [],\n        \"removed\": [],\n        \"modified\": []\n    }\n\n    for file in common_files:\n        old_file = old_map[file]\n        new_file = new_map[file]\n\n        if old_file != new_file:\n            modified_files.append(file)\n\n            f_diff = diff_functions(\n                old_file.get(\"functions\", []),\n                new_file.get(\"functions\", [])\n            )\n\n            function_changes[\"added\"].extend(f_diff[\"added\"])\n            function_changes[\"removed\"].extend(f_diff[\"removed\"])\n            function_changes[\"modified\"].extend(f_diff[\"modified\"])\n\n    return {\n        \"files\": {\n            \"added\": added_files,\n            \"removed\": removed_files,\n            \"modified\": modified_files\n        },\n        \"functions\": function_changes\n    }",
+        "hash": "f99f873f0e67558292ede98b97601fa570287136a4d2a10a663d9cb6733396fc"
+      }
+    ]
+  },
+  {
+    "path": "structure.json",
+    "size": 16976,
+    "modified_at": 1777298609.7289002,
+    "language": "json",
+    "imports": [],
+    "functions": []
+  },
+  {
+    "path": "state/prev.json",
+    "size": 10993,
+    "modified_at": 1777298298.7910542,
+    "language": "json",
+    "imports": [],
+    "functions": []
+  },
+  {
+    "path": "state/curr.json",
+    "size": 10993,
+    "modified_at": 1777298298.7903411,
+    "language": "json",
+    "imports": [],
+    "functions": []
+  }
+]

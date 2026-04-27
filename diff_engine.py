@@ -1,67 +1,86 @@
 import json
-from typing import Dict, List
+import hashlib
+
+
+def function_hash(functions: list) -> str:
+    """
+    Hash ONLY semantic structure, not metadata like timestamps
+    """
+    normalized = []
+
+    for f in functions:
+        normalized.append({
+            "name": f.get("name"),
+            "args": f.get("args", []),
+            "hash": f.get("hash")  # from extractor (best signal)
+        })
+
+    raw = json.dumps(normalized, sort_keys=True)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def file_hash(file_obj: dict) -> str:
+    """
+    Stable semantic fingerprint of a file
+    """
+    content = {
+        "imports": file_obj.get("imports", []),
+        "functions": [
+            {
+                "name": f.get("name"),
+                "args": f.get("args", []),
+                "hash": f.get("hash")
+            }
+            for f in file_obj.get("functions", [])
+        ]
+    }
+
+    raw = json.dumps(content, sort_keys=True)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
 class DiffEngine:
-    def __init__(self, old_path="structure.json", new_data=None):
-        self.old_path = old_path
-        self.new_data = new_data or []
+    def __init__(self, prev_snapshot=None, curr_snapshot=None):
+        self.prev = prev_snapshot or []
+        self.curr = curr_snapshot or []
 
-    def load_old(self):
-        try:
-            with open(self.old_path, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return []
+    def _index(self, snapshot):
+        # 🔥 identity MUST be path only
+        return {f["path"]: f for f in snapshot}
 
-    def index_functions(self, structure):
-        """
-        Build lookup:
-        {
-            "file.py::function_name": hash
-        }
-        """
-        index = {}
-
-        for file in structure:
-            path = file["path"]
-
-            for fn in file.get("functions", []):
-                key = f"{path}::{fn['name']}"
-                index[key] = fn.get("hash")
-
-        return index
-
-    def compute_diff(self):
-        old = self.load_old()
-        new = self.new_data
-
-        old_index = self.index_functions(old)
-        new_index = self.index_functions(new)
+    def compute(self):
+        prev_map = self._index(self.prev)
+        curr_map = self._index(self.curr)
 
         added = []
-        modified = []
         removed = []
+        modified = []
 
-        # NEW + MODIFIED
-        for key, new_hash in new_index.items():
-            if key not in old_index:
-                added.append(key)
-            elif old_index[key] != new_hash:
-                modified.append(key)
+        # -----------------------------
+        # ADD / MODIFY
+        # -----------------------------
+        for path, curr_file in curr_map.items():
+            if path not in prev_map:
+                added.append(curr_file)
+            else:
+                prev_file = prev_map[path]
 
-        # REMOVED
-        for key in old_index:
-            if key not in new_index:
-                removed.append(key)
+                if file_hash(prev_file) != file_hash(curr_file):
+                    modified.append({
+                        "path": path,
+                        "prev": prev_file,
+                        "curr": curr_file
+                    })
+
+        # -----------------------------
+        # REMOVE
+        # -----------------------------
+        for path, prev_file in prev_map.items():
+            if path not in curr_map:
+                removed.append(prev_file)
 
         return {
             "added": added,
             "modified": modified,
             "removed": removed
         }
-
-
-def run_diff(new_structure):
-    engine = DiffEngine(new_data=new_structure)
-    return engine.compute_diff()

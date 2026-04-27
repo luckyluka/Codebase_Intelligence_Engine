@@ -1,38 +1,50 @@
 from scanner import save_structure
 from dependency_graph import DependencyGraphBuilder
 from diff_engine import DiffEngine
-from state_manager import StateManager
+
+import json
+import os
+
+
+def load_snapshot(path):
+    if not os.path.exists(path):
+        return []
+    with open(path, "r") as f:
+        return json.load(f)
 
 
 def main():
-    state = StateManager()
-
     print("Step 0: Loading previous snapshot...")
-    old_structure = state.load_prev()
+
+    prev = load_snapshot("snapshot_prev.json")
 
     print("Step 1: Scanning codebase...")
-    new_structure = save_structure()
+    curr = save_structure("structure.json")
 
     print("Step 2: Building dependency graph...")
     builder = DependencyGraphBuilder()
     graph = builder.save()
 
     print("Step 3: Computing changes...")
+    diff = DiffEngine(prev, curr).compute()
 
-    diff_engine = DiffEngine(new_data=new_structure)
-    diff_engine.old_path = state.prev_path  # important
-    diff = diff_engine.compute_diff()
-
-    print(f"Done. Built {len(graph['edges'])} edges")
+    print("Done computing diff.")
     print(f"Added: {len(diff['added'])}")
     print(f"Modified: {len(diff['modified'])}")
     print(f"Removed: {len(diff['removed'])}")
 
-    print("Step 4: Saving new snapshot...")
-    state.save_curr(new_structure)
+    print("Step 4: Computing impact analysis...")
+    # placeholder for Phase 5 expansion
+    print("Directly impacted files: 0")
+    print("Transitive impact scope: 0")
 
-    print("Step 5: Promoting curr → prev...")
-    state.promote_curr_to_prev()
+    print("Step 5: Saving new snapshot...")
+    with open("snapshot_curr.json", "w") as f:
+        json.dump(curr, f, indent=2)
+
+    print("Step 6: Promoting curr → prev...")
+    os.replace("snapshot_curr.json", "snapshot_prev.json")
+    print("done")
 
 
 if __name__ == "__main__":

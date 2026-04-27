@@ -2,6 +2,8 @@ import os
 import json
 from extractor import extract_imports, extract_functions
 
+IGNORE_EXTENSIONS = {".pyc", ".DS_Store"}
+
 IGNORE_DIRS = {
     ".git",
     "__pycache__",
@@ -10,10 +12,16 @@ IGNORE_DIRS = {
     "build"
 }
 
-IGNORE_EXTENSIONS = {
-    ".pyc",
-    ".DS_Store"
+IGNORE_FILES = {
+    "structure.json",
+    "dependency_graph.json",
+    "snapshot_prev.json",
+    "snapshot_curr.json"
 }
+
+
+def normalize_path(path: str) -> str:
+    return os.path.normpath(path).replace("\\", "/")
 
 
 def should_ignore(path: str) -> bool:
@@ -51,11 +59,11 @@ def scan_directory(root="."):
 
     for dirpath, dirnames, filenames in os.walk(root):
 
-        # prune ignored dirs early
         dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
 
         for file in filenames:
-            full_path = os.path.join(dirpath, file)
+            full_path = os.path.abspath(os.path.join(dirpath, file))
+            full_path = full_path.replace("\\", "/")
 
             if should_ignore(full_path):
                 continue
@@ -64,30 +72,29 @@ def scan_directory(root="."):
                 with open(full_path, "r", encoding="utf-8") as f:
                     content = f.read()
             except Exception:
-                continue  # skip unreadable files entirely
+                continue
 
             is_python = full_path.endswith(".py")
 
             if is_python:
                 imports = extract_imports(full_path, content)
                 functions = extract_functions(content)
-
-                # deterministic ordering (important for hashing stability)
                 functions.sort(key=lambda x: x["lineno"])
             else:
                 imports = []
                 functions = []
 
-            file_data = {
+            results.append({
                 "path": full_path,
                 "size": len(content),
                 "modified_at": os.path.getmtime(full_path),
                 "language": detect_language(full_path),
                 "imports": imports,
                 "functions": functions
-            }
+            })
 
-            results.append(file_data)
+    # 🔥 CRITICAL: deterministic ordering for diff stability
+    results.sort(key=lambda x: x["path"])
 
     return results
 
@@ -97,5 +104,8 @@ def save_structure(output_path="structure.json", root="."):
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
+
+    for item in data:
+        item["path"] = os.path.abspath(item["path"]).replace("\\", "/")
 
     return data

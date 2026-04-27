@@ -12,65 +12,60 @@ class DependencyGraphBuilder:
 
     def _resolve_local(self, target, files):
         expected = f"{target}.py"
-
         for f in files:
             if f.endswith(expected):
                 return f
         return None
 
+    def _norm(self, p):
+        return p.replace("./", "")
+
     def build(self):
         with open(self.structure_path, "r", encoding="utf-8") as f:
             structure = json.load(f)
 
-        files = [f["path"].replace("./", "") for f in structure]
+        files = [self._norm(f["path"]) for f in structure]
 
         edges = []
 
         for entry in structure:
-            src = entry["path"].replace("./", "")
+            src = self._norm(entry["path"])
             imports = entry.get("imports", [])
 
             for imp in imports:
-
                 if not isinstance(imp, dict):
                     continue
 
-                target = imp.get("target")
                 imp_type = imp.get("type")
+                target = imp.get("target")
 
                 if not target:
                     continue
 
-                # --------------------------------------------------
-                # STD LIB CHECK (MUST BE FIRST)
-                # --------------------------------------------------
-                if target in self.stdlib:
+                if imp_type == "local_or_external":
+                    local = self._resolve_local(target, files)
+
+                    if local:
+                        edges.append({
+                            "from": src,
+                            "to": local,
+                            "type": "local_dependency",
+                            "resolution": "resolved"
+                        })
+                    else:
+                        edges.append({
+                            "from": src,
+                            "to": target,
+                            "type": "external_dependency",
+                            "resolution": "unresolved"
+                        })
+
+                elif imp_type == "stdlib":
                     edges.append({
                         "from": src,
                         "to": target,
                         "type": "stdlib_dependency",
                         "resolution": "resolved"
-                    })
-                    continue
-
-                # --------------------------------------------------
-                # LOCAL RESOLUTION
-                # --------------------------------------------------
-                local = self._resolve_local(target, files)
-
-                if local:
-                    edges.append({
-                        "from": src,
-                        "to": local,
-                        "type": "local_dependency",
-                        "resolution": "resolved"
-                    })
-                else:
-                    edges.append({
-                        "from": src,
-                        "to": target,
-                        "type": "external_dependency",
-                        "resolution": "unresolved"
                     })
 
         return {"edges": self._deduplicate(edges)}

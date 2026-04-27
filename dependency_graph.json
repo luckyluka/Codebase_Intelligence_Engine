@@ -1,94 +1,106 @@
 {
   "edges": [
     {
-      "from": "main.py",
-      "to": "scanner.py",
-      "type": "local_dependency",
-      "resolution": "resolved"
-    },
-    {
-      "from": "main.py",
-      "to": "dependency_graph.py",
-      "type": "local_dependency",
-      "resolution": "resolved"
-    },
-    {
-      "from": "main.py",
-      "to": "diff_engine.py",
-      "type": "local_dependency",
-      "resolution": "resolved"
-    },
-    {
-      "from": "main.py",
-      "to": "state_manager.py",
-      "type": "local_dependency",
-      "resolution": "resolved"
-    },
-    {
-      "from": "state_manager.py",
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/dependency_graph.py",
       "to": "json",
-      "type": "stdlib_dependency",
-      "resolution": "resolved"
+      "type": "external_dependency",
+      "resolution": "unresolved"
     },
     {
-      "from": "state_manager.py",
-      "to": "os",
-      "type": "stdlib_dependency",
-      "resolution": "resolved"
-    },
-    {
-      "from": "state_manager.py",
-      "to": "datetime",
-      "type": "stdlib_dependency",
-      "resolution": "resolved"
-    },
-    {
-      "from": "scanner.py",
-      "to": "os",
-      "type": "stdlib_dependency",
-      "resolution": "resolved"
-    },
-    {
-      "from": "scanner.py",
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/diff_engine.py",
       "to": "json",
-      "type": "stdlib_dependency",
-      "resolution": "resolved"
+      "type": "external_dependency",
+      "resolution": "unresolved"
     },
     {
-      "from": "scanner.py",
-      "to": "extractor.py",
-      "type": "local_dependency",
-      "resolution": "resolved"
-    },
-    {
-      "from": "extractor.py",
-      "to": "ast",
-      "type": "stdlib_dependency",
-      "resolution": "resolved"
-    },
-    {
-      "from": "extractor.py",
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/diff_engine.py",
       "to": "hashlib",
       "type": "external_dependency",
       "resolution": "unresolved"
     },
     {
-      "from": "dependency_graph.py",
-      "to": "json",
-      "type": "stdlib_dependency",
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/extractor.py",
+      "to": "ast",
+      "type": "external_dependency",
+      "resolution": "unresolved"
+    },
+    {
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/extractor.py",
+      "to": "hashlib",
+      "type": "external_dependency",
+      "resolution": "unresolved"
+    },
+    {
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/impact_analyzer.py",
+      "to": "collections",
+      "type": "external_dependency",
+      "resolution": "unresolved"
+    },
+    {
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/main.py",
+      "to": "/home/luka/Documents/Codebase_Intelligence_Engine/scanner.py",
+      "type": "local_dependency",
       "resolution": "resolved"
     },
     {
-      "from": "diff_engine.py",
-      "to": "json",
-      "type": "stdlib_dependency",
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/main.py",
+      "to": "/home/luka/Documents/Codebase_Intelligence_Engine/dependency_graph.py",
+      "type": "local_dependency",
       "resolution": "resolved"
     },
     {
-      "from": "diff_engine.py",
-      "to": "typing",
-      "type": "stdlib_dependency",
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/main.py",
+      "to": "/home/luka/Documents/Codebase_Intelligence_Engine/diff_engine.py",
+      "type": "local_dependency",
       "resolution": "resolved"
+    },
+    {
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/main.py",
+      "to": "json",
+      "type": "external_dependency",
+      "resolution": "unresolved"
+    },
+    {
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/main.py",
+      "to": "os",
+      "type": "external_dependency",
+      "resolution": "unresolved"
+    },
+    {
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/scanner.py",
+      "to": "os",
+      "type": "external_dependency",
+      "resolution": "unresolved"
+    },
+    {
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/scanner.py",
+      "to": "json",
+      "type": "external_dependency",
+      "resolution": "unresolved"
+    },
+    {
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/scanner.py",
+      "to": "/home/luka/Documents/Codebase_Intelligence_Engine/extractor.py",
+      "type": "local_dependency",
+      "resolution": "resolved"
+    },
+    {
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/state_manager.py",
+      "to": "json",
+      "type": "external_dependency",
+      "resolution": "unresolved"
+    },
+    {
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/state_manager.py",
+      "to": "os",
+      "type": "external_dependency",
+      "resolution": "unresolved"
+    },
+    {
+      "from": "/home/luka/Documents/Codebase_Intelligence_Engine/state_manager.py",
+      "to": "datetime",
+      "type": "external_dependency",
+      "resolution": "unresolved"
     }
   ]
 }
